@@ -1,0 +1,16 @@
+{
+  "name": "speaker-brain",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A brain-themed tracker for guest speakers: research, questions, notes, teacher feedback and a fact-snake game.",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.132.1"
+  }
+}
