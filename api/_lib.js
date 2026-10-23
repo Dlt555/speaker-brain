@@ -49,10 +49,11 @@ export function passcodeSet() {
   return Boolean(process.env.EDIT_PASSCODE);
 }
 
-// The class passcode travels in the x-passcode header. Compare hashes so timing doesn't leak it.
+// With no EDIT_PASSCODE set, anyone with the link can edit. Otherwise the passcode travels
+// in the x-passcode header; compare hashes so timing doesn't leak it.
 export function passcodeOk(req) {
   const want = process.env.EDIT_PASSCODE;
-  if (!want) return false;
+  if (!want) return true;
   const got = req.headers['x-passcode'];
   if (typeof got !== 'string' || !got) return false;
   return timingSafeEqual(digest(got), digest(want));

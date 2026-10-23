@@ -11,7 +11,7 @@ A brain-themed website for keeping track of guest speakers. Each speaker has six
 | Feedback | Occipital lobe | Comments from your teacher |
 | Fact snake | Cerebellum | A snake game: eat the true facts, avoid the fake ones (mouse, arrow keys or W A S D) |
 
-Anyone with the link can **view** the site. To **add or change** anything, people unlock editing with a class passcode that you choose.
+By default anyone with the link can view **and edit** the site. If you'd rather only let people with a class passcode make changes, set `EDIT_PASSCODE` (see below). Everyone else can then only view.
 
 ## How it fits together
 
@@ -27,15 +27,15 @@ Data lives in the database, not in the code, so updating the code never wipes yo
 1. **Sign in to Vercel.** Go to https://vercel.com and sign up with your GitHub account (the free Hobby plan is enough).
 2. **Import this repository.** Click **Add New… → Project**, find `speaker-brain` and click **Import**.
 3. **Add the settings** under **Environment Variables** before deploying:
-   - `EDIT_PASSCODE`: a passcode you choose (for example `brain-club-2026`). You and your teacher type it to unlock editing.
+   - `EDIT_PASSCODE` *(optional)*: a passcode you choose (for example `brain-club-2026`). Without it, anyone with the link can edit. With it, people type the passcode to unlock editing.
    - `ANTHROPIC_API_KEY` *(optional)*: turns on the AI research helper. Create a key at https://console.anthropic.com. AI requests are billed to that account (each request costs a few cents at most).
 
    Then click **Deploy**.
 4. **Add the database.** In the project, open the **Storage** tab, choose **Upstash for Redis** (free plan), create it and **connect it to this project**. Vercel adds the connection settings for you.
 5. **Redeploy** so the new settings take effect: **Deployments** → the latest one → **⋯ → Redeploy**.
-6. Open your site's address (something like `speaker-brain.vercel.app`), click **Unlock editing**, type the passcode and your name, and start adding speakers.
+6. Open your site's address (something like `speaker-brain.vercel.app`), click **Add your name** at the top (or **Unlock editing** if you set a passcode), and start adding speakers.
 
-Share the address with your teacher, plus the passcode if they should be able to leave feedback.
+Share the address with your teacher.
 
 ## Updating the site
 

@@ -606,9 +606,9 @@ body.readonly .w-only { display: none !important; }
 
 <div class="modal-bg" id="unlockBg" hidden>
   <form class="modal" id="unlockForm" novalidate>
-    <h2>Unlock editing</h2>
-    <p class="muted">Ask the page owner for the class passcode. Your name shows next to any feedback you leave.</p>
-    <label>Class passcode<input class="field" id="uPass" type="password" autocomplete="current-password"></label>
+    <h2 id="uTitle">Unlock editing</h2>
+    <p class="muted" id="uHelp">Ask the page owner for the class passcode. Your name shows next to any feedback you leave.</p>
+    <label id="uPassRow">Class passcode<input class="field" id="uPass" type="password" autocomplete="current-password"></label>
     <label>Your name<input class="field" id="uName" autocomplete="name" placeholder="e.g. Adrien, or Ms. Martin"></label>
     <p class="err" id="uErr" hidden></p>
     <div class="actions">
@@ -2016,8 +2016,10 @@ Reply with only a JSON array of up to 6 strings.`;
     const banner = $('#banner'), chip = $('#meChip');
     if (S.unlocked) {
       banner.hidden = true;
-      chip.innerHTML = `<span></span><button class="ghost" type="button" data-action="lock">Lock</button>`;
-      chip.querySelector('span').textContent = 'Editing as ' + (S.myName || 'you');
+      chip.innerHTML = S.config.passcodeSet
+        ? `<span></span><button class="ghost" type="button" data-action="lock">Lock</button>`
+        : `<span></span><button class="ghost" type="button" data-action="unlock">${S.myName ? 'Change name' : 'Add your name'}</button>`;
+      chip.querySelector('span').textContent = S.myName ? 'Editing as ' + S.myName : 'Anyone with the link can edit';
       chip.hidden = false;
     } else {
       chip.hidden = true;
@@ -2033,14 +2035,26 @@ Reply with only a JSON array of up to 6 strings.`;
     if (S.web) applyWebAccess();
   }
   function openUnlock() {
+    const open = !S.config.passcodeSet;
+    $('#uTitle').textContent = open ? 'Your name' : 'Unlock editing';
+    $('#uHelp').textContent = open ? 'Your name shows next to any feedback you leave.'
+      : 'Ask the page owner for the class passcode. Your name shows next to any feedback you leave.';
+    $('#uPassRow').hidden = open;
+    $('#unlockForm [type=submit]').textContent = open ? 'Save' : 'Unlock';
     $('#uPass').value = ''; $('#uName').value = S.myName || ''; $('#uErr').hidden = true;
     $('#unlockBg').hidden = false; document.body.classList.add('locked');
-    setTimeout(() => $('#uPass').focus(), 30);
+    setTimeout(() => (open ? $('#uName') : $('#uPass')).focus(), 30);
   }
   function closeUnlock() { $('#unlockBg').hidden = true; if (!S.openId) document.body.classList.remove('locked'); }
   $('#unlockForm').addEventListener('submit', async e => {
     e.preventDefault();
     const pass = $('#uPass').value.trim(), name = $('#uName').value.trim(), err = $('#uErr');
+    if (!S.config.passcodeSet) {
+      if (!name) { err.textContent = 'Type your name.'; err.hidden = false; return; }
+      S.myName = name; store('sb-name', name);
+      closeUnlock(); applyWebAccess(); toast('Name saved');
+      return;
+    }
     if (!pass) { err.textContent = 'Type the class passcode.'; err.hidden = false; return; }
     if (!name) { err.textContent = 'Add your name so your comments show who wrote them.'; err.hidden = false; return; }
     S.pass = pass;
@@ -2077,7 +2091,8 @@ Reply with only a JSON array of up to 6 strings.`;
     }
     S.config = { ai: !!first.ai, passcodeSet: !!first.passcodeSet };
     S.backend = webBackend(first);
-    if (S.pass) {
+    if (!S.config.passcodeSet) S.unlocked = true;
+    else if (S.pass) {
       try { await API.post({ op: 'check' }); S.unlocked = true; } catch { S.pass = ''; store('sb-pass', null); }
     }
     applyWebAccess();
