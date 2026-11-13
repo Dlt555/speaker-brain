@@ -1,4 +1,5 @@
 import { storeReady, redis, pipeline, passcodeOk, passcodeSet, noStore } from './_lib.js';
+import SEED_SPEAKERS from '../data/seed-speakers.js';
 
 const COLLECTIONS = ['speakers', 'feedback'];
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
@@ -14,6 +15,23 @@ function parseHash(flat) {
   return out;
 }
 
+// Copy speakers from data/seed-speakers.js into the database once each. `sb:seeded` remembers
+// which ones were copied, so a seeded speaker that is later removed on the site stays removed.
+let seedsChecked = false;
+async function applySeeds() {
+  if (seedsChecked) return;
+  for (const { id, ...doc } of SEED_SPEAKERS) {
+    if (!ID.test(id)) continue;
+    const isNew = await redis('SADD', 'sb:seeded', id);
+    if (Number(isNew) !== 1) continue;
+    const exists = await redis('HEXISTS', key('speakers'), id);
+    if (Number(exists) === 1) continue;
+    await redis('HSET', key('speakers'), id, JSON.stringify(doc));
+    await redis('INCR', VERSION_KEY);
+  }
+  seedsChecked = true;
+}
+
 export default async function handler(req, res) {
   noStore(res);
   if (!storeReady()) {
@@ -22,6 +40,7 @@ export default async function handler(req, res) {
 
   try {
     if (req.method === 'GET') {
+      await applySeeds();
       const version = String((await redis('GET', VERSION_KEY)) ?? '0');
       if (req.query.since !== undefined && String(req.query.since) === version) {
         return res.status(200).json({ version, unchanged: true });

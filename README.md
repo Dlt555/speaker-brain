@@ -41,6 +41,10 @@ Share the address with your teacher.
 
 Every change pushed to the `main` branch on GitHub redeploys the site automatically within a minute or two. Speakers, notes and feedback stay in the database, so nothing is lost.
 
+## Adding a speaker through GitHub
+
+Speakers listed in `data/seed-speakers.js` are copied into the database the first time the site loads after a deploy. After that, the copy on the site is the real one: edits made on the site are kept, and if you remove a seeded speaker on the site it does not come back. Most of the time it's easier to add speakers on the site itself.
+
 ## Running it locally
 
 ```bash
