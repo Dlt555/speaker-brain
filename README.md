@@ -1,10 +1,9 @@
 # Speaker Brain
 
-A brain-themed website for keeping track of guest speakers. Each speaker has six sections:
+A brain-themed website for keeping track of guest speakers. Each speaker has five sections:
 
 | Section | Part of the brain | What goes there |
 |---|---|---|
-| Rough notes | Brainstem | Quick sticky notes, which you can move into Research or Questions later |
 | Research | Parietal lobe | What you found out, plus an AI research helper |
 | Questions | Frontal lobe | Questions to ask, starred must-asks, answers written during the talk |
 | Notes | Temporal lobe | Notes from the talk and key takeaways |

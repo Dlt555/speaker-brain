@@ -60,6 +60,29 @@ async function applyUpdates() {
   updatesChecked = true;
 }
 
+// The Rough notes section was removed. Once, append every speaker's rough notes to the
+// end of their Notes so nothing is lost.
+let roughNotesMoved = false;
+async function moveRoughNotesIntoNotes() {
+  if (roughNotesMoved) return;
+  const isNew = await redis('SADD', 'sb:updates', 'merge-rough-notes-into-notes');
+  if (Number(isNew) === 1) {
+    const flat = await redis('HGETALL', key('speakers'));
+    for (const { id, ...doc } of parseHash(flat)) {
+      const rough = (Array.isArray(doc.scribbles) ? doc.scribbles : []).map(n => n && n.text).filter(Boolean);
+      if (!('scribbles' in doc)) continue;
+      const notes = typeof doc.notes === 'string' ? doc.notes.trim() : '';
+      const added = rough.length ? 'Rough notes:\n' + rough.map(t => '- ' + t).join('\n') : '';
+      doc.notes = [notes, added].filter(Boolean).join('\n\n');
+      delete doc.scribbles;
+      doc.updatedAt = Date.now();
+      await redis('HSET', key('speakers'), id, JSON.stringify(doc));
+    }
+    await redis('INCR', VERSION_KEY);
+  }
+  roughNotesMoved = true;
+}
+
 export default async function handler(req, res) {
   noStore(res);
   if (!storeReady()) {
@@ -70,6 +93,7 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       await applySeeds();
       await applyUpdates();
+      await moveRoughNotesIntoNotes();
       const version = String((await redis('GET', VERSION_KEY)) ?? '0');
       if (req.query.since !== undefined && String(req.query.since) === version) {
         return res.status(200).json({ version, unchanged: true });

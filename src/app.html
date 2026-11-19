@@ -261,7 +261,7 @@ select.sort { border: 1.5px solid var(--line-strong); background: var(--card); b
 .confirm { background: var(--frontal); border-radius: 14px; padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; font-weight: 700; }
 .confirm div { display: flex; gap: 8px; }
 
-.lobe-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; padding: 14px 20px 0; }
+.lobe-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 14px 20px 0; }
 .ltab {
   border: 1.5px solid var(--line); background: var(--card); border-radius: 18px; padding: 8px 6px 6px;
   display: flex; flex-direction: column; align-items: center; gap: 2px; font-weight: 800; font-size: 13px; min-width: 0; text-align: center; line-height: 1.2;
@@ -338,32 +338,6 @@ select.sort { border: 1.5px solid var(--line-strong); background: var(--card); b
 .bubble header img { width: 22px; height: 22px; border-radius: 50%; }
 .bubble header time { font-weight: 600; color: var(--ink-soft); }
 .bubble p { white-space: pre-wrap; overflow-wrap: anywhere; }
-
-/* ---------- rough notes (sticky board) ---------- */
-.drop { border: 2px dashed var(--line-strong); border-radius: 18px; padding: 10px 12px; background: var(--card); display: flex; flex-direction: column; gap: 6px; }
-.drop:focus-within { border-color: var(--accent); }
-.drop .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-.hand-field { font-family: var(--body); font-size: 18px; line-height: 1.25; border: 0; background: transparent; padding: 4px 6px; width: 100%; resize: vertical; outline: none; }
-.stickies { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 18px; padding: 8px 4px 4px; }
-.sticky {
-  --c: var(--temporal); --tilt: -1deg; position: relative;
-  background: color-mix(in srgb, var(--c) 55%, var(--card)); border-radius: 3px 3px 18px 3px;
-  padding: 18px 14px 10px; min-height: 150px; display: flex; flex-direction: column; gap: 8px;
-  box-shadow: 0 8px 16px var(--shadow); transform: rotate(var(--tilt));
-}
-.sticky::before { content: ""; position: absolute; top: -9px; left: 50%; width: 58px; height: 18px; transform: translateX(-50%) rotate(-3deg); background: color-mix(in srgb, var(--card) 65%, transparent); border: 1px solid var(--line); }
-.sticky p { font-family: var(--body); font-size: 17px; line-height: 1.35; flex: 1; white-space: pre-wrap; overflow-wrap: anywhere; }
-.sticky footer { display: flex; justify-content: space-between; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; flex-wrap: wrap; }
-.sticky footer time { opacity: .75; }
-.sticky-acts { display: flex; gap: 3px; align-items: center; flex-wrap: wrap; }
-.tiny { border: 0; background: color-mix(in srgb, var(--card) 60%, transparent); border-radius: 8px; padding: 3px 7px; font-size: 12px; font-weight: 800; }
-.tiny:hover { background: var(--card); }
-.sticky .icon-btn { width: 28px; height: 28px; color: var(--ink); }
-.sticky.c0 { --c: var(--temporal); --tilt: -1.4deg; }
-.sticky.c1 { --c: var(--frontal); --tilt: 1.1deg; }
-.sticky.c2 { --c: var(--occipital); --tilt: -.6deg; }
-.sticky.c3 { --c: var(--parietal); --tilt: 1.6deg; }
-.sticky.c4 { --c: var(--stem); --tilt: -1deg; }
 
 /* ---------- fact snake ---------- */
 .hud { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; background: var(--card); border: 1.5px solid var(--line); border-radius: 18px; padding: 10px 16px; }
@@ -646,7 +620,6 @@ body.readonly .w-only { display: none !important; }
     done: { label: 'Talk done', short: 'Done' }
   };
   const LOBES = {
-    rough: { lobe: 'stem', name: 'Rough notes', where: 'brainstem', line: 'Brainstem: runs on autopilot, no thinking needed', help: 'Drop quick, messy thoughts here. Move the good ones into Research or Questions later.' },
     research: { lobe: 'parietal', name: 'Research', where: 'parietal lobe', line: 'Parietal lobe: pulling the facts together', help: 'Background reading, sources and ideas about this speaker, gathered before the talk.' },
     questions: { lobe: 'frontal', name: 'Questions', where: 'frontal lobe', line: 'Frontal lobe: planning what to ask', help: 'Plan your questions, star the ones you must ask, and tick them off during the talk.' },
     notes: { lobe: 'temporal', name: 'Notes', where: 'temporal lobe', line: 'Temporal lobe: holding on to memories', help: 'Write down what the speaker said, then pull out the key takeaways.' },
@@ -712,7 +685,6 @@ body.readonly .w-only { display: none !important; }
       questions: Array.isArray(d.questions) ? d.questions : [],
       notes: typeof d.notes === 'string' ? d.notes : '',
       takeaways: Array.isArray(d.takeaways) ? d.takeaways : [],
-      scribbles: Array.isArray(d.scribbles) ? d.scribbles : [],
       game: {
         fakes: Array.isArray(d.game && d.game.fakes) ? d.game.fakes : [],
         trues: Array.isArray(d.game && d.game.trues) ? d.game.trues : [],
@@ -854,8 +826,7 @@ body.readonly .w-only { display: none !important; }
       { t: 'Research', s: 'parietal lobe', x: 300, y: -6, anchor: 'middle', a: 'M372 0 C392 8 398 28 388 50', sx: 300 },
       { t: 'Feedback', s: 'occipital lobe', x: 652, y: 70, anchor: 'end', a: 'M600 92 C585 115 565 130 528 150' },
       { t: 'Notes', s: 'temporal lobe', x: 100, y: 392, anchor: 'start', a: 'M178 360 C200 350 220 335 236 316' },
-      { t: 'Fact snake', s: 'cerebellum', x: 652, y: 372, anchor: 'end', a: 'M526 360 C512 352 502 342 494 330' },
-      { t: 'Rough notes', s: 'brainstem', x: 378, y: 424, anchor: 'start', a: 'M372 412 C362 410 356 404 352 392' }
+      { t: 'Fact snake', s: 'cerebellum', x: 652, y: 372, anchor: 'end', a: 'M526 360 C512 352 502 342 494 330' }
     ];
     const ann = svgEl('g', { 'aria-hidden': 'true' });
     notes.forEach(n => {
@@ -1079,7 +1050,7 @@ body.readonly .w-only { display: none !important; }
       <div class="seg" role="group" aria-label="Status">${Object.entries(STATUS).map(([k, v]) =>
         `<button type="button" data-status="${k}" aria-pressed="${s.status === k}" ${S.canWrite ? '' : 'disabled'}><i class="dot ${k}"></i>${v.short}</button>`).join('')}</div>`;
 
-    const counts = { rough: s.scribbles.length, research: s.research.length, questions: s.questions.length, notes: '', feedback: fbFor(s.id).length, snake: s.game.best ? '★' + s.game.best : '' };
+    const counts = { research: s.research.length, questions: s.questions.length, notes: '', feedback: fbFor(s.id).length, snake: s.game.best ? '★' + s.game.best : '' };
     $('#dTabs').innerHTML = Object.entries(LOBES).map(([k, L]) =>
       `<button class="ltab" role="tab" type="button" data-tab="${k}" aria-selected="${S.tab === k}" style="--tab-color: var(--${L.lobe})">
         ${miniBrain(L.lobe)}<span>${L.name} <span class="count">${counts[k]}</span></span><small>${L.where}</small></button>`).join('');
@@ -1101,7 +1072,7 @@ body.readonly .w-only { display: none !important; }
     }
     const L = LOBES[S.tab];
     const intro = `<div class="lobe-intro">${miniBrain(L.lobe)}<div><p class="hand">${L.line}</p><p class="muted">${L.help}</p></div></div>`;
-    body.innerHTML = intro + ({ rough: roughHTML, research: researchHTML, questions: questionsHTML, notes: notesHTML, feedback: feedbackHTML, snake: snakeHTML }[S.tab])(s);
+    body.innerHTML = intro + ({ research: researchHTML, questions: questionsHTML, notes: notesHTML, feedback: feedbackHTML, snake: snakeHTML }[S.tab])(s);
     for (const id in keep) { const el = document.getElementById(id); if (el && keep[id] != null) el.value = keep[id]; }
     if (sel) { const el = document.getElementById(sel.id); if (el) { el.focus({ preventScroll: true }); try { if (sel.a != null) el.setSelectionRange(sel.a, sel.b); } catch {} } }
     if (S.tab === 'feedback') resolveAuthors();
@@ -1205,26 +1176,6 @@ body.readonly .w-only { display: none !important; }
     const ps = await S.user.profiles(ids);
     els.forEach(e => { const p = ps[e.dataset.author]; if (p && !p.isMe) e.textContent = p.name || 'Someone'; });
     document.querySelectorAll('#dBody [data-avatar]').forEach(img => { const p = ps[img.dataset.avatar]; if (p) { img.src = p.avatarUrl; img.hidden = false; } });
-  }
-
-  // ---------- rough notes ----------
-  const colorIdx = id => [...String(id)].reduce((a, c) => a + c.charCodeAt(0), 0) % 5;
-  function roughHTML(s) {
-    const add = `<form class="drop w-only" id="addRough">
-      <textarea class="hand-field draft" id="sText" rows="2" placeholder="Drop a rough thought… half-sentences are fine"></textarea>
-      <div class="row"><span class="muted small">Enter to stick it · Shift+Enter for a new line</span>
-      <button class="btn primary small" type="submit">${icon('plus')}Stick it</button></div></form>`;
-    const notes = [...s.scribbles].reverse();
-    const list = notes.length ? `<div class="stickies">${notes.map(n => `<div class="sticky c${colorIdx(n.id)}">
-        <p>${esc(n.text)}</p>
-        <footer><time>${esc(ago(n.at || 0))}</time>
-          <span class="sticky-acts w-only">
-            <button class="tiny" type="button" data-act="to-r" data-id="${esc(n.id)}" title="Move to Research">→ Research</button>
-            <button class="tiny" type="button" data-act="to-q" data-id="${esc(n.id)}" title="Turn into a question">→ Question</button>
-            <button class="icon-btn" type="button" data-act="del-s" data-id="${esc(n.id)}" aria-label="Delete note">${icon('trash')}</button>
-          </span></footer></div>`).join('')}</div>`
-      : `<p class="muted">Nothing here yet. Use this spot for anything: a name you heard, a half-idea, a reminder.</p>`;
-    return add + list;
   }
 
   // ---------- fact snake ----------
@@ -1666,10 +1617,10 @@ Reply with only a JSON array of up to 6 strings.`;
       closeForm(); toast('Speaker updated');
     } else {
       const id = uid('s'); const now = Date.now();
-      const doc = { ...fields, research: [], questions: [], notes: '', takeaways: [], scribbles: [], game: { fakes: [], trues: [], best: 0 }, createdAt: now, updatedAt: now };
+      const doc = { ...fields, research: [], questions: [], notes: '', takeaways: [], game: { fakes: [], trues: [], best: 0 }, createdAt: now, updatedAt: now };
       S.speakers.push(norm({ id, ...doc }));
       write('speakers', id, 'set', doc);
-      closeForm(); openSpeaker(id, 'rough'); toast(`${name} added`);
+      closeForm(); openSpeaker(id, 'notes'); toast(`${name} added`);
     }
   });
   $('#fCancel').addEventListener('click', closeForm);
@@ -1696,12 +1647,8 @@ Reply with only a JSON array of up to 6 strings.`;
         { id: uid('q'), text: 'Can a bleached reef fully recover? How long does it take?', star: true, asked: false, answer: '' },
         { id: uid('q'), text: 'What does a normal working day look like for you?', star: false, asked: false, answer: '' }
       ],
-      notes: '', takeaways: [],
-      scribbles: [
-        { id: uid('n'), text: 'seems super into field work, ask about life on the boat?', at: now },
-        { id: uid('n'), text: 'check if she wrote a book or has a podcast', at: now },
-        { id: uid('n'), text: 'teacher said: keep questions open-ended!!', at: now }
-      ],
+      notes: 'Before the talk:\n- Seems super into field work, ask about life on the boat?\n- Check if she wrote a book or has a podcast.\n- Teacher said: keep questions open-ended!',
+      takeaways: [],
       game: {
         trues: [{ id: uid('g'), text: 'Coral reefs cover less than 1% of the ocean floor.' }],
         fakes: [
@@ -1819,14 +1766,6 @@ Reply with only a JSON array of up to 6 strings.`;
     else if (act === 'del-q') patchSpeaker(s.id, { questions: qs.filter(q => q.id !== id) });
     else if (act === 'show-ans') { S.showAns.add(id); renderDrawer(); setTimeout(() => document.getElementById('ans-' + id)?.focus(), 0); }
     else if (act === 'del-t') patchSpeaker(s.id, { takeaways: s.takeaways.filter(t => t.id !== id) });
-    else if (act === 'del-s') patchSpeaker(s.id, { scribbles: s.scribbles.filter(n => n.id !== id) });
-    else if (act === 'to-r' || act === 'to-q') {
-      const n = s.scribbles.find(x => x.id === id); if (!n) return;
-      const rest = s.scribbles.filter(x => x.id !== id);
-      if (act === 'to-r') patchSpeaker(s.id, { scribbles: rest, research: [...s.research, { id: uid('r'), kind: 'background', text: n.text, link: '' }] });
-      else patchSpeaker(s.id, { scribbles: rest, questions: [...s.questions, { id: uid('q'), text: n.text, star: false, asked: false, answer: '' }] });
-      toast(act === 'to-r' ? 'Moved to Research' : 'Moved to Questions');
-    }
     else if (act === 'del-gt') patchSpeaker(s.id, { game: { ...s.game, trues: s.game.trues.filter(t => t.id !== id) } });
     else if (act === 'del-gf') patchSpeaker(s.id, { game: { ...s.game, fakes: s.game.fakes.filter(t => t.id !== id) } });
     else if (act === 'ai') runAI(s, S.tab, b.dataset.preset);
@@ -1868,11 +1807,6 @@ Reply with only a JSON array of up to 6 strings.`;
       const text = inp.value.trim(); if (!text) { inp.focus(); return; }
       inp.value = '';
       runAI(s, S.tab, null, text);
-    } else if (form.id === 'addRough') {
-      const text = $('#sText').value.trim(); if (!text) { $('#sText').focus(); return; }
-      $('#sText').value = '';
-      patchSpeaker(s.id, { scribbles: [...s.scribbles, { id: uid('n'), text, at: Date.now() }] });
-      $('#sText')?.focus();
     } else if (form.id === 'addTrue' || form.id === 'addFake') {
       const inp = form.id === 'addTrue' ? $('#gTrue') : $('#gFake');
       const text = inp.value.trim(); if (!text) { inp.focus(); return; }
@@ -1924,9 +1858,6 @@ Reply with only a JSON array of up to 6 strings.`;
         patchSpeaker(s.id, { questions: cur.questions.map(q => q.id === qid ? { ...q, answer: v } : q) });
       }, 700);
     }
-  });
-  body.addEventListener('keydown', e => {
-    if (e.target.id === 'sText' && e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); $('#addRough').requestSubmit(); }
   });
   body.addEventListener('toggle', e => { if (e.target.id === 'gBank') S.bankOpen = e.target.open; }, true);
   body.addEventListener('focusout', e => {
