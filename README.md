@@ -43,7 +43,7 @@ Every change pushed to the `main` branch on GitHub redeploys the site automatica
 
 ## Adding a speaker through GitHub
 
-Speakers listed in `data/seed-speakers.js` are copied into the database the first time the site loads after a deploy. After that, the copy on the site is the real one: edits made on the site are kept, and if you remove a seeded speaker on the site it does not come back. Most of the time it's easier to add speakers on the site itself.
+Speakers listed in `data/seed-speakers.js` are copied into the database the first time the site loads after a deploy. After that, the copy on the site is the real one: edits made on the site are kept, and if you remove a seeded speaker on the site it does not come back. To correct a speaker that is already on the site (for example a wrong name), add a one-time fix to `data/seed-updates.js`. Most of the time it's easier to add speakers on the site itself.
 
 ## Running it locally
 

@@ -1,5 +1,6 @@
 import { storeReady, redis, pipeline, passcodeOk, passcodeSet, noStore } from './_lib.js';
 import SEED_SPEAKERS from '../data/seed-speakers.js';
+import SEED_UPDATES from '../data/seed-updates.js';
 
 const COLLECTIONS = ['speakers', 'feedback'];
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
@@ -32,6 +33,33 @@ async function applySeeds() {
   seedsChecked = true;
 }
 
+function replaceText(value, from, to) {
+  if (typeof value === 'string') return value.split(from).join(to);
+  if (Array.isArray(value)) return value.map(v => replaceText(v, from, to));
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([k, v]) => [k, replaceText(v, from, to)]));
+  }
+  return value;
+}
+
+// Apply each entry of data/seed-updates.js once (`sb:updates` remembers which ran).
+let updatesChecked = false;
+async function applyUpdates() {
+  if (updatesChecked) return;
+  for (const { key: updateKey, id, set = {}, replace = [] } of SEED_UPDATES) {
+    const isNew = await redis('SADD', 'sb:updates', updateKey);
+    if (Number(isNew) !== 1) continue;
+    const existing = await redis('HGET', key('speakers'), id);
+    if (!existing) continue;
+    let doc = { ...JSON.parse(existing), ...set };
+    for (const [from, to] of replace) doc = replaceText(doc, from, to);
+    doc.updatedAt = Date.now();
+    await redis('HSET', key('speakers'), id, JSON.stringify(doc));
+    await redis('INCR', VERSION_KEY);
+  }
+  updatesChecked = true;
+}
+
 export default async function handler(req, res) {
   noStore(res);
   if (!storeReady()) {
@@ -41,6 +69,7 @@ export default async function handler(req, res) {
   try {
     if (req.method === 'GET') {
       await applySeeds();
+      await applyUpdates();
       const version = String((await redis('GET', VERSION_KEY)) ?? '0');
       if (req.query.since !== undefined && String(req.query.since) === version) {
         return res.status(200).json({ version, unchanged: true });
