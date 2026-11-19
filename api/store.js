@@ -46,13 +46,30 @@ function replaceText(value, from, to) {
 let updatesChecked = false;
 async function applyUpdates() {
   if (updatesChecked) return;
-  for (const { key: updateKey, id, set = {}, replace = [] } of SEED_UPDATES) {
+  for (const { key: updateKey, id, set = {}, replace = [], append = {}, push = {} } of SEED_UPDATES) {
     const isNew = await redis('SADD', 'sb:updates', updateKey);
     if (Number(isNew) !== 1) continue;
     const existing = await redis('HGET', key('speakers'), id);
     if (!existing) continue;
     let doc = { ...JSON.parse(existing), ...set };
     for (const [from, to] of replace) doc = replaceText(doc, from, to);
+    // append: add text to the end of a text field, unless it is already there.
+    for (const [field, text] of Object.entries(append)) {
+      const current = typeof doc[field] === 'string' ? doc[field].trim() : '';
+      if (!current.includes(text.trim().slice(0, 80))) doc[field] = [current, text.trim()].filter(Boolean).join('\n\n');
+    }
+    // push: add items to a list ('game.fakes' reaches into game), skipping ids already there.
+    for (const [path, items] of Object.entries(push)) {
+      const parts = path.split('.');
+      let target = doc;
+      for (const part of parts.slice(0, -1)) {
+        target = target[part] = target[part] && typeof target[part] === 'object' ? target[part] : {};
+      }
+      const last = parts[parts.length - 1];
+      const list = Array.isArray(target[last]) ? target[last] : [];
+      const have = new Set(list.map(x => x && x.id));
+      target[last] = [...list, ...items.filter(x => !have.has(x.id))];
+    }
     doc.updatedAt = Date.now();
     await redis('HSET', key('speakers'), id, JSON.stringify(doc));
     await redis('INCR', VERSION_KEY);

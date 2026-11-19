@@ -261,7 +261,7 @@ select.sort { border: 1.5px solid var(--line-strong); background: var(--card); b
 .confirm { background: var(--frontal); border-radius: 14px; padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; justify-content: space-between; font-weight: 700; }
 .confirm div { display: flex; gap: 8px; }
 
-.lobe-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 14px 20px 0; }
+.lobe-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; padding: 14px 20px 0; }
 .ltab {
   border: 1.5px solid var(--line); background: var(--card); border-radius: 18px; padding: 8px 6px 6px;
   display: flex; flex-direction: column; align-items: center; gap: 2px; font-weight: 800; font-size: 13px; min-width: 0; text-align: center; line-height: 1.2;
@@ -338,6 +338,41 @@ select.sort { border: 1.5px solid var(--line-strong); background: var(--card); b
 .bubble header img { width: 22px; height: 22px; border-radius: 50%; }
 .bubble header time { font-weight: 600; color: var(--ink-soft); }
 .bubble p { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* ---------- speaker photos ---------- */
+.neuron img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+.nx-row { display: flex; align-items: center; gap: 12px; }
+.photo-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.photo-prev { width: 64px; height: 64px; border-radius: 50%; background: var(--soft); border: 1.5px dashed var(--line-strong); display: grid; place-items: center; overflow: hidden; flex: none; color: var(--ink-soft); font-size: 12px; font-weight: 700; }
+.photo-prev img { width: 100%; height: 100%; object-fit: cover; }
+.photo-row .btns { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.photo-row input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.photo-row label.btn { cursor: pointer; }
+.photo-row input[type=file]:focus-visible + label { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- flash cards ---------- */
+.fc-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.fc-progress { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 14px; flex: 1 1 220px; }
+.flash { perspective: 1400px; cursor: pointer; outline: none; }
+.flash-inner { display: grid; transition: transform .5s; transform-style: preserve-3d; }
+.flash.flipped .flash-inner { transform: rotateY(180deg); }
+.flash-face {
+  grid-area: 1 / 1; backface-visibility: hidden; -webkit-backface-visibility: hidden; min-height: 230px;
+  border-radius: 22px; padding: 26px 24px; display: flex; flex-direction: column; justify-content: center; gap: 12px;
+  border: 1.5px solid var(--line-strong); background: var(--card); box-shadow: 0 10px 30px var(--shadow);
+}
+.flash-face.back { transform: rotateY(180deg); background: color-mix(in srgb, var(--stem) 30%, var(--card)); }
+.flash-face .fc-src { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
+.flash-face p { font-family: var(--display); font-size: clamp(18px, 2.4vw, 22px); line-height: 1.35; overflow-wrap: anywhere; white-space: pre-wrap; }
+.flash-face.back p { font-family: var(--body); font-size: 18px; }
+.flash-face .fc-hint { font-size: 13px; color: var(--ink-soft); font-weight: 700; }
+.flash:focus-visible .flash-face { outline: 3px solid var(--accent); outline-offset: 3px; }
+.fc-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.fc-actions .btn { min-width: 150px; }
+.btn.good { background: var(--st-done); border-color: var(--st-done); color: var(--st-ink); }
+.fc-done { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 26px 16px; border: 1.5px dashed var(--line-strong); border-radius: 22px; }
+.fc-done h3 { font-size: 24px; }
+@media (prefers-reduced-motion: reduce) { .flash-inner { transition: none; } }
 
 /* ---------- fact snake ---------- */
 .hud { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; background: var(--card); border: 1.5px solid var(--line); border-radius: 18px; padding: 10px 16px; }
@@ -567,6 +602,17 @@ body.readonly .w-only { display: none !important; }
     <label>What is the talk about?<textarea class="field" id="fTopic" rows="3" placeholder="The topic, in a sentence or two"></textarea></label>
     <label>Website or profile link<input class="field" id="fLink" autocomplete="off" placeholder="https://"></label>
     <div style="display:flex;flex-direction:column;gap:6px">
+      <span style="font-weight:800;font-size:14px">Photo</span>
+      <div class="photo-row">
+        <div class="photo-prev" id="fPhotoPrev">None</div>
+        <div class="btns">
+          <input type="file" id="fPhoto" accept="image/*">
+          <label class="btn small" for="fPhoto">Upload a photo</label>
+          <button class="ghost" type="button" id="fPhotoRemove" hidden>Remove photo</button>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
       <span style="font-weight:800;font-size:14px">Where are you at?</span>
       <div class="seg" id="fStatus" role="group" aria-label="Status"></div>
     </div>
@@ -624,6 +670,7 @@ body.readonly .w-only { display: none !important; }
     questions: { lobe: 'frontal', name: 'Questions', where: 'frontal lobe', line: 'Frontal lobe: planning what to ask', help: 'Plan your questions, star the ones you must ask, and tick them off during the talk.' },
     notes: { lobe: 'temporal', name: 'Notes', where: 'temporal lobe', line: 'Temporal lobe: holding on to memories', help: 'Write down what the speaker said, then pull out the key takeaways.' },
     feedback: { lobe: 'occipital', name: 'Feedback', where: 'occipital lobe', line: 'Occipital lobe: seeing it through other eyes', help: 'Comments from your teacher, and your replies.' },
+    cards: { lobe: 'stem', name: 'Flash cards', where: 'brainstem', line: "Brainstem: practise until it's automatic", help: 'Flip each card, then say whether you knew it. Cards you miss come back until you know them.' },
     snake: { lobe: 'cerebellum', name: 'Fact snake', where: 'cerebellum', line: 'Cerebellum: quick reflexes and coordination', help: 'Steer the snake into the TRUE fact. Eat a fake one and you lose a life.' }
   };
   const KINDS = { background: 'Background', source: 'Source', idea: 'Idea', quote: 'Quote' };
@@ -656,6 +703,7 @@ body.readonly .w-only { display: none !important; }
     return new Date(ms).toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
   }
   const initials = n => (n || '?').replace(/^(dr|prof|mr|mrs|ms|mx)\.?\s+/i, '').split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || '?';
+  const avatarHTML = s => `<div class="neuron ${s.status}">${s.photo ? `<img src="${esc(s.photo)}" alt="">` : esc(initials(s.name))}</div>`;
   const words = t => (t || '').trim() ? t.trim().split(/\s+/).length : 0;
   function cleanLink(v) {
     v = (v || '').trim(); if (!v) return '';
@@ -685,6 +733,8 @@ body.readonly .w-only { display: none !important; }
       questions: Array.isArray(d.questions) ? d.questions : [],
       notes: typeof d.notes === 'string' ? d.notes : '',
       takeaways: Array.isArray(d.takeaways) ? d.takeaways : [],
+      cards: Array.isArray(d.cards) ? d.cards.filter(c => c && c.front && c.back) : [],
+      photo: typeof d.photo === 'string' && d.photo.startsWith('data:image/') ? d.photo : '',
       game: {
         fakes: Array.isArray(d.game && d.game.fakes) ? d.game.fakes : [],
         trues: Array.isArray(d.game && d.game.trues) ? d.game.trues : [],
@@ -826,7 +876,8 @@ body.readonly .w-only { display: none !important; }
       { t: 'Research', s: 'parietal lobe', x: 300, y: -6, anchor: 'middle', a: 'M372 0 C392 8 398 28 388 50', sx: 300 },
       { t: 'Feedback', s: 'occipital lobe', x: 652, y: 70, anchor: 'end', a: 'M600 92 C585 115 565 130 528 150' },
       { t: 'Notes', s: 'temporal lobe', x: 100, y: 392, anchor: 'start', a: 'M178 360 C200 350 220 335 236 316' },
-      { t: 'Fact snake', s: 'cerebellum', x: 652, y: 372, anchor: 'end', a: 'M526 360 C512 352 502 342 494 330' }
+      { t: 'Fact snake', s: 'cerebellum', x: 652, y: 372, anchor: 'end', a: 'M526 360 C512 352 502 342 494 330' },
+      { t: 'Flash cards', s: 'brainstem', x: 378, y: 424, anchor: 'start', a: 'M372 412 C362 410 356 404 352 392' }
     ];
     const ann = svgEl('g', { 'aria-hidden': 'true' });
     notes.forEach(n => {
@@ -895,7 +946,13 @@ body.readonly .w-only { display: none !important; }
       g.appendChild(svgEl('circle', { cx: p.x, cy: p.y, r: 21, class: 'halo', style: 'fill:' + color }));
       g.appendChild(svgEl('circle', { cx: p.x, cy: p.y, r: 14, class: 'core', style: 'fill:' + color }));
       g.appendChild(svgEl('circle', { cx: p.x, cy: p.y, r: 25, class: 'ring' }));
-      const t = svgEl('text', { x: p.x, y: p.y + 4, 'text-anchor': 'middle' }); t.textContent = initials(s.name); g.appendChild(t);
+      if (s.photo) {
+        const clip = svgEl('clipPath', { id: 'nclip-' + i }); clip.appendChild(svgEl('circle', { cx: p.x, cy: p.y, r: 13 }));
+        g.appendChild(clip);
+        g.appendChild(svgEl('image', { href: s.photo, x: p.x - 13, y: p.y - 13, width: 26, height: 26, 'clip-path': `url(#nclip-${i})`, preserveAspectRatio: 'xMidYMid slice' }));
+      } else {
+        const t = svgEl('text', { x: p.x, y: p.y + 4, 'text-anchor': 'middle' }); t.textContent = initials(s.name); g.appendChild(t);
+      }
       nodes.appendChild(g);
     });
   }
@@ -920,7 +977,7 @@ body.readonly .w-only { display: none !important; }
       const asked = nx.questions.length;
       box.innerHTML = `<span class="eyebrow">Next speaker</span>
         <span class="next-when">${esc(whenText(nx.date))}</span>
-        <h2>${esc(nx.name)}</h2>
+        <div class="nx-row">${avatarHTML(nx)}<h2>${esc(nx.name)}</h2></div>
         <p class="muted">${esc([nx.role, nx.org].filter(Boolean).join(' · ') || longDate(nx.date, nx.time))}</p>
         <div class="chips">
           <span class="chip">${nx.research.length} research</span>
@@ -975,7 +1032,7 @@ body.readonly .w-only { display: none !important; }
     const fb = fbFor(s.id).length;
     return `<article class="card">
       <div class="card-top">
-        <div class="neuron ${s.status}">${esc(initials(s.name))}</div>
+        ${avatarHTML(s)}
         <div class="card-title"><h3><button class="open-link" type="button" data-open="${esc(s.id)}">${esc(s.name)}</button></h3><p>${esc([s.role, s.org].filter(Boolean).join(' · ') || 'Add their role and organisation')}</p></div>
         ${badge}
       </div>
@@ -1014,7 +1071,7 @@ body.readonly .w-only { display: none !important; }
   // ---------- drawer ----------
   function openSpeaker(id, tab) {
     if (!byId(id)) return;
-    if (S.openId !== id) { S.confirmDelete = false; S.editing = null; S.showAns.clear(); S.genMsg = ''; stopGame(); abortAI(); }
+    if (S.openId !== id) { S.confirmDelete = false; S.editing = null; S.showAns.clear(); S.genMsg = ''; stopGame(); abortAI(); resetFlash(); }
     S.openId = id; if (tab) S.tab = tab;
     $('#drawerBg').hidden = false; document.body.classList.add('locked');
     renderAll();
@@ -1040,7 +1097,7 @@ body.readonly .w-only { display: none !important; }
           <button class="ghost danger-text" type="button" data-remove="${esc(s.id)}">${icon('trash')}Remove speaker</button>
         </div>
       </div>
-      <div class="d-title"><div class="neuron ${s.status}">${esc(initials(s.name))}</div><h2 id="dName">${esc(s.name)}</h2></div>
+      <div class="d-title">${avatarHTML(s)}<h2 id="dName">${esc(s.name)}</h2></div>
       <div class="d-meta">
         ${meta.length ? `<span>${meta.join(' · ')}</span>` : ''}
         <span>${esc(longDate(s.date, s.time))}${s.date ? ` · <b>${esc(whenText(s.date))}</b>` : ''}</span>
@@ -1050,7 +1107,7 @@ body.readonly .w-only { display: none !important; }
       <div class="seg" role="group" aria-label="Status">${Object.entries(STATUS).map(([k, v]) =>
         `<button type="button" data-status="${k}" aria-pressed="${s.status === k}" ${S.canWrite ? '' : 'disabled'}><i class="dot ${k}"></i>${v.short}</button>`).join('')}</div>`;
 
-    const counts = { research: s.research.length, questions: s.questions.length, notes: '', feedback: fbFor(s.id).length, snake: s.game.best ? '★' + s.game.best : '' };
+    const counts = { research: s.research.length, questions: s.questions.length, notes: '', feedback: fbFor(s.id).length, cards: buildDeck(s).length, snake: s.game.best ? '★' + s.game.best : '' };
     $('#dTabs').innerHTML = Object.entries(LOBES).map(([k, L]) =>
       `<button class="ltab" role="tab" type="button" data-tab="${k}" aria-selected="${S.tab === k}" style="--tab-color: var(--${L.lobe})">
         ${miniBrain(L.lobe)}<span>${L.name} <span class="count">${counts[k]}</span></span><small>${L.where}</small></button>`).join('');
@@ -1072,7 +1129,7 @@ body.readonly .w-only { display: none !important; }
     }
     const L = LOBES[S.tab];
     const intro = `<div class="lobe-intro">${miniBrain(L.lobe)}<div><p class="hand">${L.line}</p><p class="muted">${L.help}</p></div></div>`;
-    body.innerHTML = intro + ({ research: researchHTML, questions: questionsHTML, notes: notesHTML, feedback: feedbackHTML, snake: snakeHTML }[S.tab])(s);
+    body.innerHTML = intro + ({ research: researchHTML, questions: questionsHTML, notes: notesHTML, feedback: feedbackHTML, cards: cardsHTML, snake: snakeHTML }[S.tab])(s);
     for (const id in keep) { const el = document.getElementById(id); if (el && keep[id] != null) el.value = keep[id]; }
     if (sel) { const el = document.getElementById(sel.id); if (el) { el.focus({ preventScroll: true }); try { if (sel.a != null) el.setSelectionRange(sel.a, sel.b); } catch {} } }
     if (S.tab === 'feedback') resolveAuthors();
@@ -1470,6 +1527,128 @@ Reply with only a JSON array of 5 strings, for example: ["She studied chemistry 
     }
   }
 
+  // ---------- flash cards ----------
+  // The deck: the speaker's own cards, plus cards made from Q&A answers and the basics. Takeaways
+  // are split into front/back cards too when a speaker has fewer than five cards of their own.
+  function buildDeck(s) {
+    const deck = s.cards.map(c => ({ id: 'c-' + c.id, front: c.front, back: c.back, src: 'Your cards' }));
+    s.questions.filter(q => q.answer && q.answer.trim()).forEach(q => deck.push({ id: 'q-' + q.id, front: q.text, back: q.answer, src: 'Q&A' }));
+    if (s.cards.length < 5) {
+      s.takeaways.forEach(t => {
+        const m = String(t.text).match(/^(.{6,140}?[.!?])\s+([\s\S]+)$/);
+        if (m) deck.push({ id: 't-' + t.id, front: m[1], back: m[2], src: 'Takeaways' });
+      });
+    }
+    if (s.role || s.org) deck.push({ id: 'b-who', front: `Who is ${s.name}?`, back: [s.role, s.org].filter(Boolean).join(' · '), src: 'Basics' });
+    if (s.topic) deck.push({ id: 'b-topic', front: `What was ${s.name}'s talk about?`, back: s.topic, src: 'Basics' });
+    return deck;
+  }
+  const F = { sid: null, queue: [], learned: new Set(), missed: new Set(), total: 0, flipped: false, practiceMissed: false };
+  function resetFlash() { Object.assign(F, { sid: null, queue: [], learned: new Set(), missed: new Set(), total: 0, flipped: false, practiceMissed: false }); }
+  function startFlash(s, onlyMissed) {
+    const deck = buildDeck(s);
+    const ids = onlyMissed ? deck.filter(c => F.missed.has(c.id)).map(c => c.id) : deck.map(c => c.id);
+    Object.assign(F, { sid: s.id, queue: shuffle(ids), learned: new Set(), missed: new Set(), total: ids.length, flipped: false, practiceMissed: !!onlyMissed });
+  }
+  function cardsHTML(s) {
+    const deck = buildDeck(s);
+    if (F.sid !== s.id) startFlash(s);
+    const cardById = new Map(deck.map(c => [c.id, c]));
+    F.queue = F.queue.filter(id => cardById.has(id));
+    let main;
+    if (!deck.length) {
+      main = `<div class="fc-done"><h3>No cards yet</h3><p class="muted">Add key takeaways in Notes, answers in Questions, or write your own cards below.</p></div>`;
+    } else if (!F.queue.length) {
+      const firstTry = F.total - F.missed.size;
+      main = `<div class="fc-done"><p class="hand" style="color:var(--accent);font-size:18px">Deck finished</p>
+        <h3>You learned all ${F.total} card${F.total === 1 ? '' : 's'}</h3>
+        <p class="muted">${firstTry} on the first try${F.missed.size ? `, ${F.missed.size} needed another go` : ''}.</p>
+        <div class="fc-actions"><button class="btn primary" type="button" data-act="fc-restart">Go again</button>
+        ${F.missed.size ? `<button class="btn" type="button" data-act="fc-missed">Practise the ${F.missed.size} I missed</button>` : ''}</div></div>`;
+    } else {
+      const c = cardById.get(F.queue[0]);
+      const done = F.learned.size;
+      main = `<div class="fc-top">
+          <div class="fc-progress"><span>${done} of ${F.total} learned</span><div class="bar"><i style="width:${F.total ? Math.round(done / F.total * 100) : 0}%"></i></div></div>
+          <button class="ghost" type="button" data-act="fc-restart">Shuffle and restart</button>
+        </div>
+        <div class="flash ${F.flipped ? 'flipped' : ''}" id="flashCard" tabindex="0" role="button" aria-label="${F.flipped ? 'Answer side. Press Space to see the question.' : 'Question side. Press Space to see the answer.'}" data-act="fc-flip">
+          <div class="flash-inner">
+            <div class="flash-face front" aria-hidden="${F.flipped}"><span class="fc-src">${esc(c.src)}</span><p>${esc(c.front)}</p><span class="fc-hint">Click or press Space to flip</span></div>
+            <div class="flash-face back" aria-hidden="${!F.flipped}"><span class="fc-src">Answer</span><p>${esc(c.back)}</p></div>
+          </div>
+        </div>
+        <div class="fc-actions">${F.flipped
+          ? `<button class="btn" type="button" data-act="fc-again">${icon('back')}Not yet</button><button class="btn good" type="button" data-act="fc-know">I knew it${icon('check')}</button>`
+          : `<button class="btn primary" type="button" data-act="fc-flip">Show answer</button>`}</div>
+        <p class="controls-hint">Keys: Space flips · ← not yet · → I knew it</p>`;
+    }
+    const own = s.cards;
+    const bank = `<details class="bank" id="cBank" ${S.cardsOpen || !deck.length ? 'open' : ''}>
+      <summary><span class="section-title">Your cards</span><span class="muted small">${own.length} written · ${deck.length} in the deck</span></summary>
+      <div class="bank-col" style="margin-top:12px">
+        <p class="muted small">The deck also uses this speaker's Q&amp;A answers${own.length < 5 ? ', key takeaways' : ''} and basic details.</p>
+        <ul class="mini-list">${own.map(c => `<li><span><b>${esc(c.front)}</b><br>${esc(c.back)}</span>${c.ai ? '<em>AI</em>' : ''}
+          <button class="icon-btn w-only" type="button" aria-label="Delete card" data-act="del-card" data-id="${esc(c.id)}">${icon('trash')}</button></li>`).join('') || '<li class="muted">None yet</li>'}</ul>
+        <form class="w-only" id="addCard" style="display:flex;flex-direction:column;gap:8px">
+          <input class="field draft" id="cFront" placeholder="Front: a question, e.g. What does CRAFT stand for?" autocomplete="off">
+          <textarea class="field draft" id="cBack" rows="2" placeholder="Back: the answer"></textarea>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn small primary" type="submit">${icon('plus')}Add card</button>
+          ${S.sample ? `<button class="btn small" type="button" data-act="gen-cards" ${S.cardBusy ? 'disabled' : ''}>${S.cardBusy ? 'Claude is writing cards…' : 'Make cards with AI'}</button>` : ''}</div>
+          ${S.cardMsg ? `<p class="muted small">${esc(S.cardMsg)}</p>` : ''}
+        </form>
+      </div></details>`;
+    return main + bank;
+  }
+  function flashAct(s, act) {
+    if (act === 'fc-flip') { F.flipped = !F.flipped; renderDrawer(); $('#flashCard')?.focus({ preventScroll: true }); return; }
+    if (act === 'fc-restart') { startFlash(s); renderDrawer(); return; }
+    if (act === 'fc-missed') { startFlash(s, true); renderDrawer(); return; }
+    if (!F.queue.length) return;
+    const id = F.queue.shift();
+    if (act === 'fc-know') F.learned.add(id);
+    else { F.missed.add(id); F.queue.splice(Math.min(F.queue.length, 3), 0, id); }
+    F.flipped = false;
+    renderDrawer();
+    $('#flashCard')?.focus({ preventScroll: true });
+  }
+  document.addEventListener('keydown', e => {
+    if (!S.openId || S.tab !== 'cards' || !$('#modalBg').hidden || !$('#unlockBg').hidden) return;
+    const tag = e.target.tagName; if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target.closest('summary')) return;
+    const s = byId(S.openId); if (!s || !F.queue.length) return;
+    if (e.key === ' ' || e.key === 'Enter') { if (tag === 'BUTTON' && e.target.id !== 'flashCard') return; e.preventDefault(); flashAct(s, 'fc-flip'); }
+    else if (e.key === 'ArrowRight' && F.flipped) { e.preventDefault(); flashAct(s, 'fc-know'); }
+    else if (e.key === 'ArrowLeft' && F.flipped) { e.preventDefault(); flashAct(s, 'fc-again'); }
+  });
+
+  async function makeCards(s) {
+    if (!S.sample || S.cardBusy) return;
+    S.cardBusy = true; S.cardMsg = ''; renderDrawer();
+    const material = [s.topic, s.notes, ...s.takeaways.map(t => t.text), ...s.questions.filter(q => q.answer).map(q => q.text + ' ' + q.answer)]
+      .filter(Boolean).join('\n').slice(0, 8000);
+    const prompt = `A student is making revision flash cards about a guest speaker's talk.
+Speaker: ${s.name}${s.role ? ', ' + s.role : ''}${s.org ? ' at ' + s.org : ''}.
+The student's notes:
+${material || '(no notes yet)'}
+
+Write up to 8 flash cards that test the most important ideas in these notes. Use only facts that are in the notes. Each front is a short question; each back is a short answer of one or two sentences.
+Reply with only a JSON array like [{"front": "...", "back": "..."}].`;
+    try {
+      const arr = await S.sample.json(prompt, { modelTier: 'quick', cache: false });
+      const cur = byId(s.id); if (!cur) return;
+      const have = new Set(cur.cards.map(c => c.front.toLowerCase()));
+      const add = (Array.isArray(arr) ? arr : []).map(x => ({ front: String((x && x.front) || '').trim(), back: String((x && x.back) || '').trim() }))
+        .filter(c => c.front && c.back && c.front.length < 300 && c.back.length < 600 && !have.has(c.front.toLowerCase())).slice(0, 8)
+        .map(c => ({ id: uid('c'), ...c, ai: true }));
+      S.cardMsg = add.length ? `Added ${add.length} cards. Check them before you study.` : "Claude didn't come up with new cards. Try again or write your own.";
+      if (add.length) { patchSpeaker(cur.id, { cards: [...cur.cards, ...add] }); resetFlash(); }
+    } catch (e) {
+      if (!(e && e.code === 'cancelled')) S.cardMsg = sampleErrMsg(e);
+    } finally {
+      S.cardBusy = false; renderDrawer();
+    }
+  }
+
   // ---------- AI helper ----------
   const AI_PRESETS = {
     research: [
@@ -1597,11 +1776,47 @@ Reply with only a JSON array of up to 6 strings.`;
     $('#fName').value = s ? s.name : ''; $('#fRole').value = s ? s.role : ''; $('#fOrg').value = s ? s.org : '';
     $('#fDate').value = s ? s.date : ''; $('#fTime').value = s ? s.time : ''; $('#fTopic').value = s ? s.topic : '';
     $('#fLink').value = s ? s.link : '';
+    S.formPhoto = s ? s.photo : ''; renderPhotoField();
     S.formStatus = s ? s.status : 'researching'; renderStatusSeg();
     $('#fErr').hidden = true;
     $('#modalBg').hidden = false; document.body.classList.add('locked');
     setTimeout(() => { if (!$('#spForm').contains(document.activeElement)) $('#fName').focus(); }, 30);
   }
+  function renderPhotoField() {
+    const prev = $('#fPhotoPrev');
+    prev.innerHTML = S.formPhoto ? `<img src="${esc(S.formPhoto)}" alt="Speaker photo">` : 'None';
+    $('#fPhotoRemove').hidden = !S.formPhoto;
+    $('label[for="fPhoto"]').textContent = S.formPhoto ? 'Change photo' : 'Upload a photo';
+  }
+  // Shrink the photo to a 320px square JPEG so it stays small enough to save with the speaker.
+  function photoToDataURL(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const size = 320, side = Math.min(img.naturalWidth, img.naturalHeight);
+        const c = document.createElement('canvas'); c.width = c.height = size;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, size, size);
+        ctx.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, size, size);
+        URL.revokeObjectURL(url);
+        let q = 0.85, out = c.toDataURL('image/jpeg', q);
+        while (out.length > 90000 && q > 0.4) { q -= 0.15; out = c.toDataURL('image/jpeg', q); }
+        resolve(out);
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('bad image')); };
+      img.src = url;
+    });
+  }
+  $('#fPhoto').addEventListener('change', async e => {
+    const file = e.target.files && e.target.files[0]; e.target.value = '';
+    if (!file) return;
+    const err = $('#fErr');
+    if (!file.type.startsWith('image/')) { err.textContent = 'Pick an image file, such as a JPG or PNG.'; err.hidden = false; return; }
+    try { S.formPhoto = await photoToDataURL(file); err.hidden = true; renderPhotoField(); }
+    catch { err.textContent = "That image couldn't be opened. Try a JPG or PNG."; err.hidden = false; }
+  });
+  $('#fPhotoRemove').addEventListener('click', () => { S.formPhoto = ''; renderPhotoField(); });
   function closeForm() { $('#modalBg').hidden = true; if (!S.openId) document.body.classList.remove('locked'); }
 
   $('#spForm').addEventListener('submit', e => {
@@ -1611,7 +1826,7 @@ Reply with only a JSON array of up to 6 strings.`;
     const err = $('#fErr');
     if (!name) { err.textContent = "Add the speaker's name to save."; err.hidden = false; $('#fName').focus(); return; }
     if (link === null) { err.textContent = 'That link doesn\'t look right. Paste a full web address, like https://example.com'; err.hidden = false; $('#fLink').focus(); return; }
-    const fields = { name, role: $('#fRole').value.trim(), org: $('#fOrg').value.trim(), date: $('#fDate').value, time: $('#fTime').value, topic: $('#fTopic').value.trim(), link, status: S.formStatus };
+    const fields = { name, role: $('#fRole').value.trim(), org: $('#fOrg').value.trim(), date: $('#fDate').value, time: $('#fTime').value, topic: $('#fTopic').value.trim(), link, photo: S.formPhoto || '', status: S.formStatus };
     if (S.editId) {
       patchSpeaker(S.editId, fields);
       closeForm(); toast('Speaker updated');
@@ -1772,6 +1987,9 @@ Reply with only a JSON array of up to 6 strings.`;
     else if (act === 'ai-stop') { const st = aiState(S.tab); if (st.ctl) st.ctl.abort(); }
     else if (act === 'ai-add') aiAdd(s, S.tab, [Number(b.dataset.i)]);
     else if (act === 'ai-add-all') aiAdd(s, S.tab, aiState(S.tab).items.map((_, i) => i));
+    else if (act.startsWith('fc-')) flashAct(s, act);
+    else if (act === 'gen-cards') makeCards(s);
+    else if (act === 'del-card') { patchSpeaker(s.id, { cards: s.cards.filter(c => c.id !== id) }); }
     else if (act === 'snake-start') startGame();
     else if (act === 'snake-pause') togglePause();
     else if (act === 'gen-fakes') makeFakes(s);
@@ -1807,6 +2025,15 @@ Reply with only a JSON array of up to 6 strings.`;
       const text = inp.value.trim(); if (!text) { inp.focus(); return; }
       inp.value = '';
       runAI(s, S.tab, null, text);
+    } else if (form.id === 'addCard') {
+      const front = $('#cFront').value.trim(), back = $('#cBack').value.trim();
+      if (!front) { $('#cFront').focus(); return; }
+      if (!back) { $('#cBack').focus(); return; }
+      $('#cFront').value = ''; $('#cBack').value = '';
+      const card = { id: uid('c'), front, back };
+      if (F.sid === s.id) { F.queue.push('c-' + card.id); F.total++; }
+      patchSpeaker(s.id, { cards: [...s.cards, card] });
+      $('#cFront')?.focus();
     } else if (form.id === 'addTrue' || form.id === 'addFake') {
       const inp = form.id === 'addTrue' ? $('#gTrue') : $('#gFake');
       const text = inp.value.trim(); if (!text) { inp.focus(); return; }
@@ -1859,7 +2086,7 @@ Reply with only a JSON array of up to 6 strings.`;
       }, 700);
     }
   });
-  body.addEventListener('toggle', e => { if (e.target.id === 'gBank') S.bankOpen = e.target.open; }, true);
+  body.addEventListener('toggle', e => { if (e.target.id === 'gBank') S.bankOpen = e.target.open; if (e.target.id === 'cBank') S.cardsOpen = e.target.open; }, true);
   body.addEventListener('focusout', e => {
     if (e.target.id === 'notesArea') setTimeout(() => renderDrawer(), 800);
   });

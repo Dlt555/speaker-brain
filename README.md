@@ -1,6 +1,6 @@
 # Speaker Brain
 
-A brain-themed website for keeping track of guest speakers. Each speaker has five sections:
+A brain-themed website for keeping track of guest speakers. Each speaker has six sections, and can have a photo (upload it under **Edit details**):
 
 | Section | Part of the brain | What goes there |
 |---|---|---|
@@ -8,6 +8,7 @@ A brain-themed website for keeping track of guest speakers. Each speaker has fiv
 | Questions | Frontal lobe | Questions to ask, starred must-asks, answers written during the talk |
 | Notes | Temporal lobe | Notes from the talk and key takeaways |
 | Feedback | Occipital lobe | Comments from your teacher |
+| Flash cards | Brainstem | Flip cards made from your own cards, Q&A answers and takeaways; missed cards come back until you know them |
 | Fact snake | Cerebellum | A snake game: eat the true facts, avoid the fake ones (mouse, arrow keys or W A S D) |
 
 By default anyone with the link can view **and edit** the site. If you'd rather only let people with a class passcode make changes, set `EDIT_PASSCODE` (see below). Everyone else can then only view.
