@@ -86,5 +86,104 @@ Q&A
         { id: 'fk-goh-10', text: 'His messaging hierarchy uses the exact same post on every platform.' }
       ]
     }
+  },
+  {
+    // From the full talk transcript. It also settles CRAFT's fifth letter: T for Testing.
+    key: 'nick-goh-from-transcript',
+    id: 'seed-nick-goh',
+    replace: [
+      ["It covers Context, Role, Action, Format, plus a final element I couldn't make out in the transcript.",
+        'It covers Context, Role, Action, Format and Testing (checking the output instead of taking it as it is).'],
+      ['- Context, Role, Action, Format, plus a fifth element (not clear in my notes).',
+        '- Context, Role, Action, Format, Testing.'],
+      ["- Find out the fifth letter of CRAFT (couldn't make it out in the transcript).",
+        "- CRAFT's fifth letter: T for Testing (from the full transcript)."],
+      ["To check: find out the fifth letter of CRAFT (I couldn't make it out in the transcript).",
+        'CRAFT (his prompting framework): Context, Role, Action, Format, Testing.'],
+      ['Find out the fifth letter of CRAFT. Prompt frameworks with this name vary, so check which version he uses rather than guessing.',
+        'CRAFT, as he teaches it: Context, Role, Action, Format, Testing. Other versions of CRAFT use a different last letter, so quote his version.'],
+      ['What are the known letters of CRAFT?', 'What does CRAFT stand for?'],
+      ['Context, Role, Action, Format, plus a fifth element. Also: be specific about the output you want.',
+        'Context, Role, Action, Format, Testing. Also: be specific about the output you want.']
+    ],
+    append: {
+      notes: `More detail from the full transcript
+(The transcript was auto-generated and hard to read in places, so a few details below are best guesses.)
+
+Why AI skills matter
+- Companies treat AI as an investment, but many are waiting to see how it plays out. Someone who can show them how to use it stands out, so use AI to turn your own knowledge into a competitive advantage when you join the industry.
+
+Setting up the Project
+- A Claude Project is like your own version of a GenAI tool. Its context is your knowledge: Word documents, PDFs and images. Every conversation in the Project draws on the same, consistent information.
+- His demo team: brief reviewer, researcher and strategist, messaging hierarchy, creative (key visual concepts), copywriter, then a reviewer. The same approach works for other workflows such as SEO, GEO, performance marketing or events.
+
+How Skills work
+- Each conversation is started by a Skill instead of project-level instructions.
+- A Skill has a name, a description and its instructions. You can type the Skill's name, or just describe what you want, and Claude picks the right Skill. The description is what tells Claude when to use it.
+
+The workflow, step by step
+1. He wrote a brief for an eco-friendly bag that was deliberately imperfect.
+2. A "marketing brief revision" step improved and checked it. The revised brief was saved as a Word document in the Project.
+3. Research and strategy then worked from the revised brief, without re-pasting it. It looked for hidden motivations and used social listening: a social media intelligence tool that looked at top posts and comments from luxury brands such as Louis Vuitton and Gucci.
+4. The messaging hierarchy turned that into key messages for the creative team to use.
+5. Big ideas and key visual concepts came next.
+6. A reviewer agent scored the result against the brief.
+
+Messaging hierarchy, explained
+- Once a copywriter or creative team has a big idea, the hierarchy keeps it consistent across channels. TikTok is different from Instagram and YouTube, and each platform has its own audience, so the message has to fit each one.
+- Having this in hand helps you have a more meaningful discussion with your agency or creative team.
+
+CRAFT, in full
+- Context: the background the AI needs.
+- Role: who the AI should act as, for example "an award-winning designer".
+- Action: what you want it to do.
+- Format: the shape of the output, for example Instagram-friendly content.
+- Testing: check the output, for example with a group of people, instead of taking everything the AI gives you as it is.
+
+Tool limits and mixing tools
+- Claude would not create images of a real brand's products or real models, so its mock-up used a generic model.
+- He wanted more storytelling, so he made the images in ChatGPT (the brand's leather bag reimagined as an eco-friendly backpack) and used a separate video tool for animation.
+- Outputs included two Instagram stories, an Instagram post and a carousel showing the bag from the back, front, side and inside.
+- Spreading work across tools means you don't use up all your credits on one.
+
+The 5/10 score
+- He chose a storytelling background instead of the plainer, shop-like setting the AI recommended. Because that went against the revised brief, the messaging hierarchy and the research, the reviewer scored it 5/10. Earlier options had scored around 6 to 7 out of 10, and he could have refined further.
+- The point: chasing a good AI score can compromise your own judgment.
+
+Real people beat AI scores
+- He showed the room version A and version B with almost no brief and asked which would push them to buy. Consumers see the creative, not the brief.
+- Finding out why people raised their hands needs a live conversation. AI can't do that, so your role as the subject-matter expert stays important.
+- Use the AI's work and its score to have better conversations with your managers, teams and agencies about the issues behind the score.`
+    },
+    push: {
+      takeaways: [
+        { id: 'tk-goh-11', text: 'Start from an imperfect brief and let a brief-revision step improve and validate it. Every later step then works from the revised brief saved in the Project.' },
+        { id: 'tk-goh-12', text: 'Separate conversations work like a filing system. In one long chat you scroll up and down hunting for each output; one conversation per role keeps everything organised.' },
+        { id: 'tk-goh-13', text: 'A Skill needs a clear name and description. You can trigger it by name or just describe what you want, and Claude picks the right Skill.' },
+        { id: 'tk-goh-14', text: "AI tools have limits: Claude wouldn't create images of a real brand's products or models, so he made the images in ChatGPT and the animation in a separate video tool." },
+        { id: 'tk-goh-15', text: 'Use AI output to start better conversations with managers, teams and agencies, including about the issues behind a score, not to replace them.' }
+      ],
+      questions: [
+        { id: 'q-goh-02', text: 'How did you get the research and the business case?', star: false, asked: true, answer: "Through social listening: a social media intelligence tool connected to his accounts looked at top-performing posts from luxury brands like Louis Vuitton and Gucci. He didn't redo it because it was only a demo. You decide whether the output is good enough to take into a meeting and start a conversation." },
+        { id: 'q-goh-03', text: 'Why use separate conversations instead of one conversation?', star: false, asked: true, answer: "In one conversation you end up scrolling up and down to find each output. Separate conversations act like a filing system, so you're building a virtual team and a way of keeping the work organised at the same time." }
+      ],
+      cards: [
+        { id: 'c-goh-14', front: 'What does the T in CRAFT stand for, and what does it mean?', back: "Testing: check the output, for example with a group of people, instead of taking everything the AI gives you as it is." },
+        { id: 'c-goh-15', front: 'Give an example of the "Role" part of CRAFT.', back: 'Telling the AI to act as an award-winning designer.' },
+        { id: 'c-goh-16', front: 'Which roles were in his demo marketing team?', back: 'Brief reviewer, researcher and strategist, messaging hierarchy, creative (key visuals), copywriter, and a reviewer.' },
+        { id: 'c-goh-17', front: 'Name other marketing workflows the same approach could handle.', back: 'SEO, GEO, performance marketing and events.' },
+        { id: 'c-goh-18', front: 'What three parts does a Skill have?', back: 'A name, a description (which tells Claude when to use it) and its instructions.' },
+        { id: 'c-goh-19', front: 'What did the research step look at?', back: 'Hidden motivations, plus social listening on top posts and comments from luxury brands such as Louis Vuitton and Gucci.' },
+        { id: 'c-goh-20', front: 'Why did he make the campaign images in ChatGPT instead of Claude?', back: "Claude wouldn't create images of a real brand's products or real models, and he wanted more storytelling." },
+        { id: 'c-goh-21', front: 'Why did his chosen design score only 5/10?', back: 'He went against the AI-recommended setting, so it no longer matched the revised brief, messaging hierarchy and research the reviewer checked against.' },
+        { id: 'c-goh-22', front: 'Why use separate conversations for each role?', back: 'They work like a filing system. One long chat means scrolling up and down to find each output.' }
+      ],
+      'game.fakes': [
+        { id: 'fk-goh-11', text: 'In his CRAFT framework, the T stands for Tone.' },
+        { id: 'fk-goh-12', text: 'Claude happily generated photos of the real LVMH bag and models for him.' },
+        { id: 'fk-goh-13', text: 'His starting brief was perfect, so he skipped the brief-revision step.' },
+        { id: 'fk-goh-14', text: 'He said one long conversation is the tidiest way to keep the work organised.' }
+      ]
+    }
   }
 ];
